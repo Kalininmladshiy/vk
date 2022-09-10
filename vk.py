@@ -22,8 +22,8 @@ def send_picture_to_web_site(url, path_to_pictures, filename, key):
             key: file,
          }
         response = requests.post(url, files=files)
-        response.raise_for_status()
-        return response.json()
+    response.raise_for_status()
+    return response.json()
 
 
 def make_post_request_to_vk(method_name, payload):
