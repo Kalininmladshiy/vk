@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-def download_pictures(
+def download_picture(
     path_to_pictures,
     filename,
     url,

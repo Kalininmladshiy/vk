@@ -1,12 +1,12 @@
 import requests
 import random
 import os
-from utils import download_pictures, send_picture_to_web_site
+from utils import download_picture, send_picture_to_web_site
 from pathlib import Path
 from dotenv import load_dotenv
 
 
-def get_comics(comics_num=None):
+def get_comic(comics_num=None):
     if not comics_num:
         url = f'https://xkcd.com/info.0.json'
     else:
@@ -35,10 +35,10 @@ if __name__ == '__main__':
     client_id = os.environ['VK_CLIENT_ID']
     group_id = os.environ['VK_GROUP_ID']
     access_token = os.environ['VK_ACCESS_TOKEN']
-    last_comics = get_comics()
+    last_comics = get_comic()
     comics_num = random.randint(1, last_comics['num'])
-    random_comics = get_comics(comics_num)
-    download_pictures(Path.cwd(), 'python.png', random_comics['img'])
+    random_comics = get_comic(comics_num)
+    download_picture(Path.cwd(), 'python.png', random_comics['img'])
     comment = random_comics['alt']
     payload = {
         'group_id': group_id,
