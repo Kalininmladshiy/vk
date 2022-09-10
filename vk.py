@@ -39,39 +39,41 @@ if __name__ == '__main__':
     comics_num = random.randint(1, last_comics['num'])
     random_comics = get_comic(comics_num)
     download_picture(Path.cwd(), 'python.png', random_comics['img'])
-    comment = random_comics['alt']
-    payload = {
-        'group_id': group_id,
-        'access_token': access_token,
-        'v': '5.131',
-     }
-    wall_server = make_get_request_to_vk('photos.getWallUploadServer', payload)
-    upload_url = wall_server['response']['upload_url']
-    params_for_save_image = send_picture_to_web_site(
-        upload_url,
-        Path.cwd(),
-        'python.png',
-        'photo'
-     )
-    payload = {
-        'group_id': group_id,
-        'access_token': access_token,
-        'v': '5.131',
-        'photo': params_for_save_image['photo'],
-        'server': params_for_save_image['server'],
-        'hash': params_for_save_image['hash'],
-     }
-    params_for_post_photo = make_post_request_to_vk('photos.saveWallPhoto', payload)
-    owner_id = params_for_post_photo['response'][0]['owner_id']
-    media_id = params_for_post_photo['response'][0]['id']
-    payload = {
-        'access_token': access_token,
-        'v': '5.131',
-        'owner_id': f'-{group_id}',
-        'from_group': 0,
-        'message': comment,
-        'attachments': f"photo{owner_id}_{media_id}",
-     }
-    make_post_request_to_vk('wall.post', payload)
-    os.remove(Path.cwd() / 'python.png')
+    try:
+        comment = random_comics['alt']
+        payload = {
+            'group_id': group_id,
+            'access_token': access_token,
+            'v': '5.131',
+         }
+        wall_server = make_get_request_to_vk('photos.getWallUploadServer', payload)
+        upload_url = wall_server['response']['upload_url']
+        params_for_save_image = send_picture_to_web_site(
+            upload_url,
+            Path.cwd(),
+            'python.png',
+            'photo'
+         )
+        payload = {
+            'group_id': group_id,
+            'access_token': access_token,
+            'v': '5.131',
+            'photo': params_for_save_image['photo'],
+            'server': params_for_save_image['server'],
+            'hash': params_for_save_image['hash'],
+         }
+        params_for_post_photo = make_post_request_to_vk('photos.saveWallPhoto', payload)
+        owner_id = params_for_post_photo['response'][0]['owner_id']
+        media_id = params_for_post_photo['response'][0]['id']
+        payload = {
+            'access_token': access_token,
+            'v': '5.131',
+            'owner_id': f'-{group_id}',
+            'from_group': 0,
+            'message': comment,
+            'attachments': f"photo{owner_id}_{media_id}",
+         }
+        make_post_request_to_vk('wall.post', payload)
+    finally:
+        os.remove(Path.cwd() / 'python.png')
     
