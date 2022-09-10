@@ -16,7 +16,7 @@ def get_comics(comics_num=None):
     return response.json()
 
 
-def send_picture(url, path_to_pictures, filename, key):
+def send_picture_to_web_site(url, path_to_pictures, filename, key):
     with open(Path() / path_to_pictures / filename, 'rb') as file:
         files = {
             key: file,
@@ -26,7 +26,7 @@ def send_picture(url, path_to_pictures, filename, key):
         return response.json()
 
 
-def dowload_picture_to_vk(method_name, payload):
+def make_post_request_to_vk(method_name, payload):
     url = f'https://api.vk.com/method/{method_name}'
     response = requests.post(url, params=payload)
     response.raise_for_status()
@@ -57,7 +57,12 @@ if __name__ == '__main__':
      }
     wall_server = make_get_request_to_vk('photos.getWallUploadServer', payload)
     upload_url = wall_server['response']['upload_url']
-    params_for_save_image = send_picture(upload_url, Path.cwd(), 'python.png', 'photo')
+    params_for_save_image = send_picture_to_web_site(
+        upload_url,
+        Path.cwd(),
+        'python.png',
+        'photo'
+     )
     payload = {
         'group_id': group_id,
         'access_token': access_token,
@@ -66,7 +71,7 @@ if __name__ == '__main__':
         'server': params_for_save_image['server'],
         'hash': params_for_save_image['hash'],
      }
-    params_for_post_photo = dowload_picture_to_vk('photos.saveWallPhoto', payload)
+    params_for_post_photo = make_post_request_to_vk('photos.saveWallPhoto', payload)
     owner_id = params_for_post_photo['response'][0]['owner_id']
     media_id = params_for_post_photo['response'][0]['id']
     payload = {
@@ -77,6 +82,6 @@ if __name__ == '__main__':
         'message': comment,
         'attachments': f"photo{owner_id}_{media_id}",
      }
-    dowload_picture_to_vk('wall.post', payload)
+    make_post_request_to_vk('wall.post', payload)
     os.remove(Path.cwd() / 'python.png')
     
