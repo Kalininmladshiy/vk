@@ -30,9 +30,9 @@ def dowload_picture_to_vk(url, payload):
 
 if __name__ == '__main__':
     load_dotenv()
-    client_id = os.environ['CLIENT_ID']
-    group_id = os.environ['GROUP_ID']
-    access_token = os.environ['ACCESS_TOKEN']
+    client_id = os.environ['VK_CLIENT_ID']
+    group_id = os.environ['VK_GROUP_ID']
+    access_token = os.environ['VK_ACCESS_TOKEN']
     last_comics_url = 'https://xkcd.com/info.0.json'
     get_wall_server_url = 'https://api.vk.com/method/photos.getWallUploadServer'
     save_wall_photo_url = 'https://api.vk.com/method/photos.saveWallPhoto'
