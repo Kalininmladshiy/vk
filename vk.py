@@ -1,7 +1,7 @@
 import requests
 import random
 import os
-from utils import download_pictures
+from utils import download_pictures, send_picture_to_web_site
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -12,16 +12,6 @@ def get_comics(comics_num=None):
     else:
         url = f'https://xkcd.com/{comics_num}/info.0.json'
     response = requests.get(url)
-    response.raise_for_status()
-    return response.json()
-
-
-def send_picture_to_web_site(url, path_to_pictures, filename, key):
-    with open(Path() / path_to_pictures / filename, 'rb') as file:
-        files = {
-            key: file,
-         }
-        response = requests.post(url, files=files)
     response.raise_for_status()
     return response.json()
 
