@@ -6,14 +6,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
-def get_comic(comics_num=None):
+def get_comic_img_num_comment(comics_num=None):
     if not comics_num:
         url = f'https://xkcd.com/info.0.json'
     else:
         url = f'https://xkcd.com/{comics_num}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    return response.json()
+    comic_info = response.json()
+    return comic_info['img'], comic_info['num'], comic_info['alt']
 
 
 def make_post_request_to_vk(method_name, payload):
@@ -35,12 +36,11 @@ if __name__ == '__main__':
     client_id = os.environ['VK_CLIENT_ID']
     group_id = os.environ['VK_GROUP_ID']
     access_token = os.environ['VK_ACCESS_TOKEN']
-    last_comics = get_comic()
-    comics_num = random.randint(1, last_comics['num'])
-    random_comics = get_comic(comics_num)
-    download_picture(Path.cwd(), 'python.png', random_comics['img'])
+    comics_num = random.randint(1, get_comic_img_num_comment()[1])
+    random_comics = get_comic_img_num_comment(comics_num)[0]
+    download_picture(Path.cwd(), 'python.png', random_comics)
     try:
-        comment = random_comics['alt']
+        comment = get_comic_img_num_comment(comics_num)[2]
         payload = {
             'group_id': group_id,
             'access_token': access_token,
