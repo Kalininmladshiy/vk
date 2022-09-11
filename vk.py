@@ -37,10 +37,9 @@ if __name__ == '__main__':
     group_id = os.environ['VK_GROUP_ID']
     access_token = os.environ['VK_ACCESS_TOKEN']
     comics_num = random.randint(1, get_comic_img_num_comment()[1])
-    random_comics = get_comic_img_num_comment(comics_num)[0]
-    download_picture(Path.cwd(), 'python.png', random_comics)
+    img, num, comment = get_comic_img_num_comment(comics_num)
+    download_picture(Path.cwd(), 'python.png', img)
     try:
-        comment = get_comic_img_num_comment(comics_num)[2]
         payload = {
             'group_id': group_id,
             'access_token': access_token,
