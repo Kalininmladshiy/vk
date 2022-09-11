@@ -1,7 +1,7 @@
 import requests
 import random
 import os
-from utils import download_picture, send_picture_to_web_site
+from utils import download_picture, upload_picture_to_web_site
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -24,11 +24,16 @@ def make_post_request_to_vk(method_name, payload):
     return response.json()
 
 
-def make_get_request_to_vk(method_name, payload):
-    url = f'https://api.vk.com/method/{method_name}'
+def get_upload_url_for_vk():
+    payload = {
+        'group_id': group_id,
+        'access_token': access_token,
+        'v': '5.131',
+     }    
+    url = f'https://api.vk.com/method/photos.getWallUploadServer'
     response = requests.get(url, params=payload)
     response.raise_for_status()
-    return response.json()    
+    return response.json()['response']['upload_url']    
 
 
 if __name__ == '__main__':
@@ -40,14 +45,8 @@ if __name__ == '__main__':
     img, num, comment = get_comic_img_num_comment(comics_num)
     download_picture(Path.cwd(), 'python.png', img)
     try:
-        payload = {
-            'group_id': group_id,
-            'access_token': access_token,
-            'v': '5.131',
-         }
-        wall_server = make_get_request_to_vk('photos.getWallUploadServer', payload)
-        upload_url = wall_server['response']['upload_url']
-        params_for_save_image = send_picture_to_web_site(
+        upload_url = get_upload_url_for_vk()
+        params_for_save_image = upload_picture_to_web_site(
             upload_url,
             Path.cwd(),
             'python.png',
