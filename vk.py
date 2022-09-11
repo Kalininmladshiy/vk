@@ -17,8 +17,32 @@ def get_comic_img_num_comment(comics_num=None):
     return comic_info['img'], comic_info['num'], comic_info['alt']
 
 
-def make_post_request_to_vk(method_name, payload):
-    url = f'https://api.vk.com/method/{method_name}'
+def save_comic_in_vk(group_id, access_token, photo, server, hash_,):
+    payload = {
+        'group_id': group_id,
+        'access_token': access_token,
+        'v': '5.131',
+        'photo': photo,
+        'server': server,
+        'hash': hash_,
+     }    
+    url = f'https://api.vk.com/method/photos.saveWallPhoto'
+    response = requests.post(url, params=payload)
+    response.raise_for_status()
+    params_for_post_photo = response.json()
+    return params_for_post_photo['response'][0]['owner_id'], params_for_post_photo['response'][0]['id']
+
+
+def publish_comic_in_vk(access_token, group_id, comment, owner_id, media_id):
+    payload = {
+        'access_token': access_token,
+        'v': '5.131',
+        'owner_id': f'-{group_id}',
+        'from_group': 0,
+        'message': comment,
+        'attachments': f"photo{owner_id}_{media_id}",
+     }    
+    url = f'https://api.vk.com/method/wall.post'
     response = requests.post(url, params=payload)
     response.raise_for_status()
     return response.json()
@@ -50,26 +74,14 @@ if __name__ == '__main__':
             Path.cwd(),
             'python.png',
          )
-        payload = {
-            'group_id': group_id,
-            'access_token': access_token,
-            'v': '5.131',
-            'photo': photo,
-            'server': server,
-            'hash': hash_,
-         }
-        params_for_post_photo = make_post_request_to_vk('photos.saveWallPhoto', payload)
-        owner_id = params_for_post_photo['response'][0]['owner_id']
-        media_id = params_for_post_photo['response'][0]['id']
-        payload = {
-            'access_token': access_token,
-            'v': '5.131',
-            'owner_id': f'-{group_id}',
-            'from_group': 0,
-            'message': comment,
-            'attachments': f"photo{owner_id}_{media_id}",
-         }
-        make_post_request_to_vk('wall.post', payload)
+        owner_id, media_id = save_comic_in_vk(
+            group_id,
+            access_token,
+            photo,
+            server,
+            hash_,
+         )
+        publish_comic_in_vk(access_token, group_id, comment, owner_id, media_id)
     finally:
         os.remove(Path.cwd() / 'python.png')
     
