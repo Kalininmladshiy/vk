@@ -1,7 +1,7 @@
 import requests
 import random
 import os
-from utils import download_picture, upload_picture_to_web_site
+from utils import download_picture, upload_picture_to_vk
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -24,7 +24,7 @@ def make_post_request_to_vk(method_name, payload):
     return response.json()
 
 
-def get_upload_url_for_vk():
+def get_upload_url_for_vk(group_id, access_token):
     payload = {
         'group_id': group_id,
         'access_token': access_token,
@@ -38,27 +38,25 @@ def get_upload_url_for_vk():
 
 if __name__ == '__main__':
     load_dotenv()
-    client_id = os.environ['VK_CLIENT_ID']
     group_id = os.environ['VK_GROUP_ID']
     access_token = os.environ['VK_ACCESS_TOKEN']
     comics_num = random.randint(1, get_comic_img_num_comment()[1])
     img, num, comment = get_comic_img_num_comment(comics_num)
     download_picture(Path.cwd(), 'python.png', img)
     try:
-        upload_url = get_upload_url_for_vk()
-        params_for_save_image = upload_picture_to_web_site(
+        upload_url = get_upload_url_for_vk(group_id, access_token)
+        photo, server, hash_ = upload_picture_to_vk(
             upload_url,
             Path.cwd(),
             'python.png',
-            'photo'
          )
         payload = {
             'group_id': group_id,
             'access_token': access_token,
             'v': '5.131',
-            'photo': params_for_save_image['photo'],
-            'server': params_for_save_image['server'],
-            'hash': params_for_save_image['hash'],
+            'photo': photo,
+            'server': server,
+            'hash': hash_,
          }
         params_for_post_photo = make_post_request_to_vk('photos.saveWallPhoto', payload)
         owner_id = params_for_post_photo['response'][0]['owner_id']

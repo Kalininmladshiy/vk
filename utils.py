@@ -15,11 +15,12 @@ def download_picture(
         file.write(response.content)
 
 
-def upload_picture_to_web_site(url, path_to_pictures, filename, key):
+def upload_picture_to_vk(url, path_to_pictures, filename):
     with open(Path() / path_to_pictures / filename, 'rb') as file:
         files = {
-            key: file,
+            'photo': file,
          }
         response = requests.post(url, files=files)
     response.raise_for_status()
-    return response.json()
+    params_for_save_image = response.json()
+    return params_for_save_image['photo'], params_for_save_image['server'], params_for_save_image['hash']
