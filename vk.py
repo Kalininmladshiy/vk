@@ -6,15 +6,17 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
-def get_comic_img_num_comment(comics_num=None):
-    if not comics_num:
-        url = f'https://xkcd.com/info.0.json'
-    else:
-        url = f'https://xkcd.com/{comics_num}/info.0.json'
-    response = requests.get(url)
+def get_random_comic_img_and_comment():
+    last_comic_url = f'https://xkcd.com/info.0.json'
+    response = requests.get(last_comic_url)
+    response.raise_for_status()    
+    last_comic_num = response.json()['num']
+    random_comic_num = random.randint(1, last_comic_num)
+    random_comic_url = f'https://xkcd.com/{random_comic_num}/info.0.json'
+    response = requests.get(random_comic_url)
     response.raise_for_status()
     comic_info = response.json()
-    return comic_info['img'], comic_info['num'], comic_info['alt']
+    return comic_info['img'], comic_info['alt']
 
 
 def save_comic_in_vk(group_id, access_token, photo, server, hash_,):
@@ -64,8 +66,7 @@ if __name__ == '__main__':
     load_dotenv()
     group_id = os.environ['VK_GROUP_ID']
     access_token = os.environ['VK_ACCESS_TOKEN']
-    comics_num = random.randint(1, get_comic_img_num_comment()[1])
-    img, num, comment = get_comic_img_num_comment(comics_num)
+    img, comment = get_random_comic_img_and_comment()
     download_picture(Path.cwd(), 'python.png', img)
     try:
         upload_url = get_upload_url_for_vk(group_id, access_token)
