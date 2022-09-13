@@ -19,7 +19,7 @@ def get_random_comic_img_and_comment():
     return comic_info['img'], comic_info['alt']
 
 
-def save_comic_in_vk(group_id, access_token, photo, server, hash_,):
+def save_comic_in_vk(group_id, access_token, photo, server, hash_):
     payload = {
         'group_id': group_id,
         'access_token': access_token,
